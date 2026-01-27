@@ -18,7 +18,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     var typedName = document.getElementById('typed-name');
-    typeText(typedName, 'Karan Tandra', 80);
+    typeText(typedName, 'Karan Tandra', 80, function () {
+        typedName.classList.add('done');
+    });
 
     var sections = [
         {
@@ -193,9 +195,91 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }, 3000);
 
-    canvas.style.pointerEvents = 'auto';
+    // === AMBIENT EFFECTS ===
     
-    var blackHoles = [];
+    // 1. Comets - larger, slower shooting stars with longer tails
+    var comets = [];
+    setInterval(function () {
+        if (Math.random() < 0.3) {
+            comets.push({
+                x: -50,
+                y: Math.random() * canvas.height * 0.6,
+                length: 150 + Math.random() * 100,
+                speed: 2 + Math.random() * 2,
+                angle: Math.PI / 6 + (Math.random() - 0.5) * 0.2,
+                alpha: 1,
+                hue: Math.random() * 60 + 180,
+                active: true
+            });
+        }
+    }, 45000);
+
+    // 2. Constellations - temporary connecting lines
+    var constellations = [];
+    setInterval(function () {
+        if (Math.random() < 0.6 && stars.length > 5) {
+            var centerStar = stars[Math.floor(Math.random() * stars.length)];
+            var nearbyStars = stars.filter(function (s) {
+                var dx = s.x - centerStar.x;
+                var dy = s.y - centerStar.y;
+                return Math.sqrt(dx * dx + dy * dy) < 150 && s !== centerStar;
+            }).slice(0, 4);
+            if (nearbyStars.length >= 2) {
+                constellations.push({
+                    stars: [centerStar].concat(nearbyStars),
+                    life: 180,
+                    maxLife: 180
+                });
+            }
+        }
+    }, 10000);
+
+    // 4. Satellites
+    var satellites = [];
+    setInterval(function () {
+        if (Math.random() < 0.5) {
+            var fromLeft = Math.random() > 0.5;
+            satellites.push({
+                x: fromLeft ? -10 : canvas.width + 10,
+                y: Math.random() * canvas.height * 0.4 + 50,
+                speed: (fromLeft ? 1 : -1) * (1.5 + Math.random()),
+                active: true
+            });
+        }
+    }, 30000);
+
+    // 5. Star flares - random background star brightens
+    var starFlares = [];
+    setInterval(function () {
+        if (Math.random() < 0.6 && stars.length > 0) {
+            var star = stars[Math.floor(Math.random() * stars.length)];
+            starFlares.push({
+                x: star.x,
+                y: star.y,
+                life: 60,
+                maxLife: 60
+            });
+        }
+    }, 8000);
+
+    // 6. Nebula clouds
+    var nebulaClouds = [];
+    setInterval(function () {
+        if (Math.random() < 0.3) {
+            nebulaClouds.push({
+                x: -200,
+                y: Math.random() * canvas.height,
+                radius: 100 + Math.random() * 150,
+                speed: 0.3 + Math.random() * 0.3,
+                hue: Math.random() * 360,
+                alpha: 0.03 + Math.random() * 0.03,
+                life: 600,
+                maxLife: 600
+            });
+        }
+    }, 60000);
+
+    canvas.style.pointerEvents = 'auto';
 
     canvas.addEventListener('click', function (e) {
         var rect = canvas.getBoundingClientRect();
@@ -210,66 +294,130 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    canvas.addEventListener('dblclick', function (e) {
+    var vortex = { active: false, x: 0, y: 0, startTime: 0, color: null };
+    var supernovas = [];
+    var vortexColors = [
+        { r: 255, g: 200, b: 100, name: 'gold' },
+        { r: 100, g: 180, b: 255, name: 'blue' },
+        { r: 255, g: 100, b: 150, name: 'pink' },
+        { r: 150, g: 255, b: 150, name: 'green' },
+        { r: 200, g: 150, b: 255, name: 'purple' },
+        { r: 255, g: 255, b: 255, name: 'white' }
+    ];
+
+    canvas.addEventListener('mousedown', function (e) {
         var rect = canvas.getBoundingClientRect();
-        blackHoles.push({
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top,
-            radius: 0,
-            maxRadius: 30,
-            life: 180,
-            maxLife: 180
-        });
+        vortex.active = true;
+        vortex.x = e.clientX - rect.left;
+        vortex.y = e.clientY - rect.top;
+        vortex.startTime = Date.now();
+        vortex.color = vortexColors[Math.floor(Math.random() * vortexColors.length)];
+    });
+
+    canvas.addEventListener('mousemove', function (e) {
+        if (vortex.active) {
+            var rect = canvas.getBoundingClientRect();
+            vortex.x = e.clientX - rect.left;
+            vortex.y = e.clientY - rect.top;
+        }
+    });
+
+    canvas.addEventListener('mouseup', function () {
+        if (vortex.active) {
+            var holdTime = Date.now() - vortex.startTime;
+            // Only trigger supernova if held for at least 200ms
+            if (holdTime >= 200) {
+                var intensity = Math.min(1, holdTime / 2000);
+                var color = vortex.color;
+                supernovas.push({
+                    x: vortex.x,
+                    y: vortex.y,
+                    radius: 0,
+                    maxRadius: 150 + intensity * 100,
+                    life: 90,
+                    maxLife: 90,
+                    intensity: 0.3 + intensity * 0.7,
+                    color: color,
+                    particles: []
+                });
+                for (var i = 0; i < 20 + Math.floor(intensity * 30); i++) {
+                    var angle = Math.random() * Math.PI * 2;
+                    var speed = 2 + Math.random() * 4 * (0.5 + intensity);
+                    supernovas[supernovas.length - 1].particles.push({
+                        x: vortex.x,
+                        y: vortex.y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        life: 60 + Math.random() * 40,
+                        radius: 1 + Math.random() * 2,
+                        color: color
+                    });
+                }
+            }
+        }
+        vortex.active = false;
+    });
+
+    canvas.addEventListener('mouseleave', function () {
+        vortex.active = false;
     });
 
     var originalStarPositions = stars.map(function (s) {
         return { x: s.x, y: s.y };
     });
 
-    function updateBlackHoles() {
-        blackHoles.forEach(function (bh, bhIndex) {
-            bh.life--;
-            var progress = 1 - bh.life / bh.maxLife;
-            if (progress < 0.1) {
-                bh.radius = bh.maxRadius * (progress / 0.1);
-            } else if (bh.life < 30) {
-                bh.radius = bh.maxRadius * (bh.life / 30);
-            } else {
-                bh.radius = bh.maxRadius;
-            }
-
-            if (bh.life > 0) {
+    function updateSupernovas() {
+        supernovas.forEach(function (sn, snIndex) {
+            sn.life--;
+            var progress = 1 - sn.life / sn.maxLife;
+            sn.radius = sn.maxRadius * Math.pow(progress, 0.5);
+            
+            if (sn.life > 0) {
+                var alpha = (sn.life / sn.maxLife) * sn.intensity;
+                var c = sn.color || { r: 255, g: 200, b: 100 };
+                
+                // Expanding shockwave
                 ctx.beginPath();
-                var gradient = ctx.createRadialGradient(bh.x, bh.y, 0, bh.x, bh.y, bh.radius * 2);
-                gradient.addColorStop(0, 'rgba(0, 0, 0, 0.9)');
-                gradient.addColorStop(0.5, 'rgba(30, 0, 60, 0.5)');
-                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-                ctx.fillStyle = gradient;
-                ctx.arc(bh.x, bh.y, bh.radius * 2, 0, Math.PI * 2);
-                ctx.fill();
-
-                stars.forEach(function (star, sIndex) {
-                    if (star.burst) return;
-                    var dx = bh.x - star.x;
-                    var dy = bh.y - star.y;
-                    var dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 200 && dist > 5) {
-                        var force = (200 - dist) / 200 * 2;
-                        star.x += (dx / dist) * force;
-                        star.y += (dy / dist) * force;
+                ctx.arc(sn.x, sn.y, sn.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(' + c.r + ', ' + c.g + ', ' + c.b + ', ' + (alpha * 0.5) + ')';
+                ctx.lineWidth = 3 * (1 - progress);
+                ctx.stroke();
+                
+                // Inner glow
+                if (progress < 0.3) {
+                    var glowAlpha = alpha * (1 - progress / 0.3);
+                    var gradient = ctx.createRadialGradient(sn.x, sn.y, 0, sn.x, sn.y, 50);
+                    gradient.addColorStop(0, 'rgba(255, 255, 255, ' + glowAlpha + ')');
+                    gradient.addColorStop(0.3, 'rgba(' + c.r + ', ' + c.g + ', ' + c.b + ', ' + (glowAlpha * 0.6) + ')');
+                    gradient.addColorStop(1, 'rgba(' + Math.floor(c.r * 0.5) + ', ' + Math.floor(c.g * 0.3) + ', ' + Math.floor(c.b * 0.3) + ', 0)');
+                    ctx.beginPath();
+                    ctx.fillStyle = gradient;
+                    ctx.arc(sn.x, sn.y, 50, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Particles
+                sn.particles.forEach(function (p, pIndex) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vx *= 0.98;
+                    p.vy *= 0.98;
+                    p.life--;
+                    
+                    if (p.life > 0) {
+                        var pAlpha = p.life / 60;
+                        var pc = p.color || { r: 255, g: 200, b: 100 };
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.radius * pAlpha, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(' + pc.r + ', ' + pc.g + ', ' + pc.b + ', ' + pAlpha + ')';
+                        ctx.fill();
                     }
                 });
+                sn.particles = sn.particles.filter(function (p) { return p.life > 0; });
             }
-
-            if (bh.life <= 0) {
-                blackHoles.splice(bhIndex, 1);
-                stars.forEach(function (star, sIndex) {
-                    if (!star.burst && originalStarPositions[sIndex]) {
-                        star.targetX = originalStarPositions[sIndex].x;
-                        star.targetY = originalStarPositions[sIndex].y;
-                        star.returning = true;
-                    }
-                });
+            
+            if (sn.life <= 0) {
+                supernovas.splice(snIndex, 1);
             }
         });
     }
@@ -302,8 +450,23 @@ document.addEventListener("DOMContentLoaded", function () {
                     var gravityStrength = Math.max(0, (300 - dist) / 300) * 15 * star.depth;
                     var targetX = star.baseX + (dx / (dist || 1)) * gravityStrength;
                     var targetY = star.baseY + (dy / (dist || 1)) * gravityStrength - parallaxY;
-                    star.x += (targetX - star.x) * 0.05;
-                    star.y += (targetY - star.y) * 0.05;
+                    
+                    if (vortex.active) {
+                        var vdx = vortex.x - star.x;
+                        var vdy = vortex.y - star.y;
+                        var vdist = Math.sqrt(vdx * vdx + vdy * vdy);
+                        if (vdist < 250 && vdist > 10) {
+                            var angle = Math.atan2(vdy, vdx);
+                            var swirlAngle = angle + Math.PI / 2;
+                            var pullStrength = (250 - vdist) / 250 * 3;
+                            var swirlStrength = (250 - vdist) / 250 * 4;
+                            star.x += Math.cos(swirlAngle) * swirlStrength + (vdx / vdist) * pullStrength * 0.3;
+                            star.y += Math.sin(swirlAngle) * swirlStrength + (vdy / vdist) * pullStrength * 0.3;
+                        }
+                    } else {
+                        star.x += (targetX - star.x) * 0.05;
+                        star.y += (targetY - star.y) * 0.05;
+                    }
                 }
                 star.alpha += star.twinkleSpeed;
                 if (star.alpha > 0.8 || star.alpha < 0.2) {
@@ -316,7 +479,40 @@ document.addEventListener("DOMContentLoaded", function () {
             ctx.fill();
         });
 
-        updateBlackHoles();
+        updateSupernovas();
+
+        // Vortex star effect - glowing star that grows while holding
+        if (vortex.active) {
+            var holdTime = Date.now() - vortex.startTime;
+            var growthProgress = Math.min(1, holdTime / 2000);
+            var starRadius = 5 + growthProgress * 15;
+            var glowRadius = 30 + growthProgress * 70;
+            var pulse = 1 + Math.sin(Date.now() * 0.01) * 0.1;
+            var vc = vortex.color || { r: 255, g: 220, b: 150 };
+            
+            // Outer glow
+            var gradient = ctx.createRadialGradient(vortex.x, vortex.y, 0, vortex.x, vortex.y, glowRadius * pulse);
+            gradient.addColorStop(0, 'rgba(' + vc.r + ', ' + vc.g + ', ' + vc.b + ', ' + (0.6 + growthProgress * 0.3) + ')');
+            gradient.addColorStop(0.2, 'rgba(' + vc.r + ', ' + vc.g + ', ' + vc.b + ', ' + (0.3 + growthProgress * 0.2) + ')');
+            gradient.addColorStop(0.5, 'rgba(' + Math.floor(vc.r * 0.7) + ', ' + Math.floor(vc.g * 0.5) + ', ' + Math.floor(vc.b * 0.3) + ', ' + (0.1 + growthProgress * 0.1) + ')');
+            gradient.addColorStop(1, 'rgba(' + Math.floor(vc.r * 0.5) + ', ' + Math.floor(vc.g * 0.3) + ', ' + Math.floor(vc.b * 0.2) + ', 0)');
+            ctx.beginPath();
+            ctx.fillStyle = gradient;
+            ctx.arc(vortex.x, vortex.y, glowRadius * pulse, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Core star
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(' + Math.min(255, vc.r + 40) + ', ' + Math.min(255, vc.g + 40) + ', ' + Math.min(255, vc.b + 40) + ', 0.95)';
+            ctx.arc(vortex.x, vortex.y, starRadius * pulse, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Bright center
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+            ctx.arc(vortex.x, vortex.y, starRadius * 0.4 * pulse, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
         shootingStars.forEach(function (ss, index) {
             if (!ss.active) return;
@@ -349,6 +545,116 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         shootingStars = shootingStars.filter(function (ss) { return ss.active; });
+
+        // === RENDER AMBIENT EFFECTS ===
+
+        // 1. Comets
+        comets.forEach(function (comet, index) {
+            if (!comet.active) return;
+            comet.x += Math.cos(comet.angle) * comet.speed;
+            comet.y += Math.sin(comet.angle) * comet.speed;
+            
+            if (comet.x > canvas.width + 100 || comet.y > canvas.height + 100) {
+                comet.active = false;
+                return;
+            }
+            
+            var gradient = ctx.createLinearGradient(
+                comet.x, comet.y,
+                comet.x - Math.cos(comet.angle) * comet.length,
+                comet.y - Math.sin(comet.angle) * comet.length
+            );
+            gradient.addColorStop(0, 'hsla(' + comet.hue + ', 80%, 80%, 0.9)');
+            gradient.addColorStop(0.3, 'hsla(' + comet.hue + ', 60%, 60%, 0.5)');
+            gradient.addColorStop(1, 'hsla(' + comet.hue + ', 40%, 40%, 0)');
+            
+            ctx.beginPath();
+            ctx.moveTo(comet.x, comet.y);
+            ctx.lineTo(
+                comet.x - Math.cos(comet.angle) * comet.length,
+                comet.y - Math.sin(comet.angle) * comet.length
+            );
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // Comet head
+            ctx.beginPath();
+            ctx.arc(comet.x, comet.y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = 'hsla(' + comet.hue + ', 100%, 90%, 1)';
+            ctx.fill();
+        });
+        comets = comets.filter(function (c) { return c.active; });
+
+        // 2. Constellations
+        constellations.forEach(function (con, index) {
+            con.life--;
+            var alpha = Math.min(con.life / 30, (con.maxLife - con.life) / 30, 0.3);
+            
+            ctx.strokeStyle = 'rgba(150, 180, 255, ' + alpha + ')';
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            for (var i = 0; i < con.stars.length - 1; i++) {
+                ctx.moveTo(con.stars[i].x, con.stars[i].y);
+                ctx.lineTo(con.stars[i + 1].x, con.stars[i + 1].y);
+            }
+            ctx.stroke();
+        });
+        constellations = constellations.filter(function (c) { return c.life > 0; });
+
+        // 4. Satellites
+        satellites.forEach(function (sat, index) {
+            if (!sat.active) return;
+            sat.x += sat.speed;
+            
+            if (sat.x < -20 || sat.x > canvas.width + 20) {
+                sat.active = false;
+                return;
+            }
+            
+            ctx.beginPath();
+            ctx.arc(sat.x, sat.y, 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fill();
+        });
+        satellites = satellites.filter(function (s) { return s.active; });
+
+        // 5. Star flares
+        starFlares.forEach(function (flare, index) {
+            flare.life--;
+            var progress = 1 - flare.life / flare.maxLife;
+            var size = Math.sin(progress * Math.PI) * 15;
+            var alpha = Math.sin(progress * Math.PI) * 0.8;
+            
+            var gradient = ctx.createRadialGradient(flare.x, flare.y, 0, flare.x, flare.y, size);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, ' + alpha + ')');
+            gradient.addColorStop(0.5, 'rgba(255, 240, 200, ' + (alpha * 0.5) + ')');
+            gradient.addColorStop(1, 'rgba(255, 200, 100, 0)');
+            
+            ctx.beginPath();
+            ctx.fillStyle = gradient;
+            ctx.arc(flare.x, flare.y, size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        starFlares = starFlares.filter(function (f) { return f.life > 0; });
+
+        // 6. Nebula clouds
+        nebulaClouds.forEach(function (neb, index) {
+            neb.life--;
+            neb.x += neb.speed;
+            
+            var alpha = neb.alpha * Math.min(neb.life / 60, (neb.maxLife - neb.life) / 60, 1);
+            var gradient = ctx.createRadialGradient(neb.x, neb.y, 0, neb.x, neb.y, neb.radius);
+            gradient.addColorStop(0, 'hsla(' + neb.hue + ', 60%, 50%, ' + alpha + ')');
+            gradient.addColorStop(0.5, 'hsla(' + neb.hue + ', 50%, 40%, ' + (alpha * 0.5) + ')');
+            gradient.addColorStop(1, 'hsla(' + neb.hue + ', 40%, 30%, 0)');
+            
+            ctx.beginPath();
+            ctx.fillStyle = gradient;
+            ctx.arc(neb.x, neb.y, neb.radius, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        nebulaClouds = nebulaClouds.filter(function (n) { return n.life > 0; });
 
         requestAnimationFrame(animateStars);
     }

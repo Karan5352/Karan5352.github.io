@@ -95,8 +95,24 @@ h1 {
     padding-right: 0.15em;
 }
 
+.name-container {
+    width: 100%;
+    max-width: 560px;
+    text-align: left;
+    pointer-events: none;
+}
+
+h1 {
+    pointer-events: none;
+}
+
 .dark-mode h1 {
     border-right-color: var(--text-dark);
+}
+
+h1.done {
+    border-right: none;
+    animation: none;
 }
 
 @keyframes blink-cursor {
@@ -107,12 +123,20 @@ h1 {
 .section {
     width: 100%;
     max-width: 560px;
-    padding: 3.5rem 2rem;
+    padding: 3.5rem 0;
     opacity: 0;
     transform: translateY(30px);
     transition: opacity 0.7s ease, transform 0.7s ease;
     text-align: left;
     margin: 0 auto;
+    pointer-events: none;
+}
+
+.section a,
+.section button,
+.project-item,
+.skill-tag {
+    pointer-events: auto;
 }
 
 .section.visible {
