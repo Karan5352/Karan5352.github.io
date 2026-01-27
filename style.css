@@ -1,59 +1,211 @@
 :root {
-    --bg-light: #f8f9fa;
-    --bg-dark: #181818;
-    --text-light: #181818;
-    --text-dark: #f8f9fa;
+    --bg-light: #f5f5f5;
+    --bg-dark: #0d0d0d;
+    --text-light: #1a1a1a;
+    --text-dark: #f0f0f0;
+    --accent-light: #666;
+    --accent-dark: #999;
+    --highlight: #3b82f6;
 }
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
 body {
     background: var(--bg-light);
-    color: #111;
+    color: var(--text-light);
     min-height: 100vh;
-    margin: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    transition: background 0.3s, color 0.3s;
+    transition: background 0.5s ease, color 0.5s ease;
+    font-family: 'Source Code Pro', monospace;
+    line-height: 1.7;
+    padding: 0 1.5rem;
+    padding-top: 35vh;
+    padding-bottom: 6rem;
 }
-.top-right {
-    position: absolute;
-    top: 1.5rem;
-    right: 2rem;
-    z-index: 10;
-}
-:root {
-    --bg-light: #f8f9fa;
-    --bg-dark: #181818;
-    --text-light: #181818;
-    --text-dark: #f8f9fa;
-}
+
 .dark-mode {
     background: var(--bg-dark);
     color: var(--text-dark);
 }
-h1 {
-    font-size: 3rem;
-    font-weight: 700;
-    margin: 0 0 2rem 0;
-    font-family: 'Source Code Pro', 'Courier New', Courier, monospace;
+
+.top-right {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 100;
 }
+
+h1 {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: 500;
+    margin: 0 0 3rem 0;
+    letter-spacing: -0.03em;
+    display: inline-block;
+    border-right: 2px solid var(--text-light);
+    animation: blink-cursor 0.8s step-end infinite;
+    white-space: nowrap;
+    overflow: hidden;
+    padding-right: 0.15em;
+}
+
+.dark-mode h1 {
+    border-right-color: var(--text-dark);
+}
+
+@keyframes blink-cursor {
+    0%, 100% { border-color: currentColor; }
+    50% { border-color: transparent; }
+}
+
+.section {
+    width: 100%;
+    max-width: 560px;
+    padding: 3.5rem 0;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.typed-heading {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin: 0 0 1.25rem 0;
+    border-right: 2px solid;
+    animation: blink-cursor 0.8s step-end infinite;
+    display: inline-block;
+    white-space: nowrap;
+    padding-right: 0.15em;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+}
+
+.typed-heading.done {
+    border-right: none;
+    animation: none;
+}
+
+.typed-text {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--accent-light);
+    margin: 0;
+    line-height: 1.9;
+    max-width: 480px;
+}
+
+.dark-mode .typed-text {
+    color: var(--accent-dark);
+}
+
+.links-container {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+}
+
+.links-container a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 0.95rem;
+    position: relative;
+    padding-bottom: 2px;
+    transition: color 0.3s ease;
+}
+
+.links-container a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 1px;
+    background: var(--highlight);
+    transition: width 0.3s ease;
+}
+
+.links-container a:hover::after {
+    width: 100%;
+}
+
+.links-container a:hover {
+    color: var(--highlight);
+}
+
+.dark-mode .links-container a {
+    color: var(--text-dark);
+}
+
+.dark-mode .links-container a:hover {
+    color: var(--highlight);
+}
+
 .mode-toggle {
-    background: #e0e0e0;
-    color: #111;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-light);
     border: none;
     border-radius: 50%;
-    padding: 0.5rem;
+    width: 44px;
+    height: 44px;
     cursor: pointer;
-    transition: background 0.3s, color 0.3s;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    backdrop-filter: blur(10px);
 }
+
+.mode-toggle:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.05);
+}
+
 .mode-toggle svg {
     display: block;
+    width: 22px;
+    height: 22px;
 }
+
 .dark-mode .mode-toggle {
-    background: #333;
-    color: #f8f9fa;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-dark);
+}
+
+.dark-mode .mode-toggle:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+::selection {
+    background: var(--highlight);
+    color: #fff;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding-top: 25vh;
+    }
+    
+    .section {
+        padding: 2.5rem 0;
+    }
+    
+    .links-container {
+        gap: 1.25rem;
+    }
 }

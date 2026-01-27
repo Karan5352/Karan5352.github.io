@@ -7,18 +7,34 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="dark-mode">
     <div class="top-right">
         <button id="mode-toggle" class="mode-toggle" aria-label="Toggle dark mode">
-            <span class="icon-moon">
+            <span class="icon-moon" style="display:none;">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"></path></svg>
             </span>
-            <span class="icon-sun" style="display:none;">
+            <span class="icon-sun">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
             </span>
         </button>
     </div>
-    <h1>Karan Tandra</h1>
+    <h1 id="typed-name"></h1>
+
+    <section class="section" id="about-section">
+        <h2 id="typed-about" class="typed-heading"></h2>
+        <p id="typed-about-text" class="typed-text"></p>
+    </section>
+
+    <section class="section" id="projects-section">
+        <h2 id="typed-projects" class="typed-heading"></h2>
+        <p id="typed-projects-text" class="typed-text"></p>
+    </section>
+
+    <section class="section" id="links-section">
+        <h2 id="typed-links" class="typed-heading"></h2>
+        <div id="links-container" class="links-container"></div>
+    </section>
+
     <script src="script.js"></script>
 </body>
 </html>
