@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         {
             id: 'about-section',
             heading: { el: 'typed-about', text: 'about' },
-            content: { el: 'typed-about-text', text: 'developer. creator. problem solver.' }
+            content: { el: 'typed-about-text', text: 'building things that work.' }
         },
         {
             id: 'projects-section',
@@ -233,8 +233,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     var dx = bh.x - star.x;
                     var dy = bh.y - star.y;
                     var dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 200 && dist > 5) {
-                        var force = (200 - dist) / 200 * 2;
+                    if (dist < 350 && dist > 5) {
+                        var force = (350 - dist) / 350 * 6;
                         star.x += (dx / dist) * force;
                         star.y += (dy / dist) * force;
                     }
