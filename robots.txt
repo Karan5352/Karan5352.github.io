@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://karan5352.github.io/sitemap.xml
