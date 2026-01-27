@@ -3,6 +3,64 @@ document.addEventListener("DOMContentLoaded", function () {
     var iconMoon = toggleBtn.querySelector('.icon-moon');
     var iconSun = toggleBtn.querySelector('.icon-sun');
 
+    // Contact modal
+    var contactBtn = document.getElementById('contact-btn');
+    var contactModal = document.getElementById('contact-modal');
+    var contactClose = document.getElementById('contact-close');
+
+    contactBtn.addEventListener('click', function () {
+        contactModal.classList.add('active');
+        formStatus.textContent = '';
+    });
+
+    contactClose.addEventListener('click', function () {
+        contactModal.classList.remove('active');
+        formStatus.textContent = '';
+    });
+
+    contactModal.addEventListener('click', function (e) {
+        if (e.target === contactModal) {
+            contactModal.classList.remove('active');
+            formStatus.textContent = '';
+        }
+    });
+
+    // AJAX form submission
+    var contactForm = document.getElementById('contact-form');
+    var formStatus = document.getElementById('form-status');
+
+    contactForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        
+        // Populate hidden fields
+        document.getElementById('form-timestamp').value = new Date().toISOString();
+        document.getElementById('form-useragent').value = navigator.userAgent;
+        document.getElementById('form-screensize').value = window.screen.width + 'x' + window.screen.height;
+        document.getElementById('form-timezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        document.getElementById('form-referrer').value = document.referrer || 'direct';
+        document.getElementById('form-language').value = navigator.language;
+        
+        var formData = new FormData(contactForm);
+        
+        fetch('https://formspree.io/f/xgokqlna', {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json' }
+        }).then(function (response) {
+            if (response.ok) {
+                formStatus.textContent = 'message sent!';
+                formStatus.style.color = '#4ade80';
+                contactForm.reset();
+            } else {
+                formStatus.textContent = 'something went wrong.';
+                formStatus.style.color = '#f87171';
+            }
+        }).catch(function () {
+            formStatus.textContent = 'something went wrong.';
+            formStatus.style.color = '#f87171';
+        });
+    });
+
     function typeText(element, text, speed, callback) {
         var i = 0;
         function type() {
@@ -189,7 +247,25 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     }
 
+    // Track tab visibility to prevent effect spam
+    var lastActiveTime = Date.now();
+    var tabJustActivated = false;
+    
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+            var timeSinceActive = Date.now() - lastActiveTime;
+            if (timeSinceActive > 1000) {
+                tabJustActivated = true;
+                setTimeout(function () {
+                    tabJustActivated = false;
+                }, 500);
+            }
+        }
+        lastActiveTime = Date.now();
+    });
+
     setInterval(function () {
+        if (tabJustActivated) return;
         if (Math.random() < 0.4) {
             shootingStars.push(createShootingStar());
         }
@@ -200,6 +276,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 1. Comets - larger, slower shooting stars with longer tails
     var comets = [];
     setInterval(function () {
+        if (tabJustActivated) return;
         if (Math.random() < 0.3) {
             comets.push({
                 x: -50,
@@ -217,6 +294,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 2. Constellations - temporary connecting lines
     var constellations = [];
     setInterval(function () {
+        if (tabJustActivated) return;
         if (Math.random() < 0.6 && stars.length > 5) {
             var centerStar = stars[Math.floor(Math.random() * stars.length)];
             var nearbyStars = stars.filter(function (s) {
@@ -237,6 +315,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 4. Satellites
     var satellites = [];
     setInterval(function () {
+        if (tabJustActivated) return;
         if (Math.random() < 0.5) {
             var fromLeft = Math.random() > 0.5;
             satellites.push({
@@ -251,6 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 5. Star flares - random background star brightens
     var starFlares = [];
     setInterval(function () {
+        if (tabJustActivated) return;
         if (Math.random() < 0.6 && stars.length > 0) {
             var star = stars[Math.floor(Math.random() * stars.length)];
             starFlares.push({
@@ -265,6 +345,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 6. Nebula clouds
     var nebulaClouds = [];
     setInterval(function () {
+        if (tabJustActivated) return;
         if (Math.random() < 0.3) {
             nebulaClouds.push({
                 x: -200,

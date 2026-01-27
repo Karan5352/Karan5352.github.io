@@ -58,6 +58,8 @@ body:not(.dark-mode) .aurora {
     left: 1.5rem;
     z-index: 100;
     display: flex;
+    flex-direction: row;
+    align-items: center;
     gap: 0.75rem;
 }
 
@@ -72,6 +74,9 @@ body:not(.dark-mode) .aurora {
     justify-content: center;
     transition: all 0.3s ease;
     text-decoration: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
 }
 
 .icon-link:hover {
@@ -418,6 +423,144 @@ body:not(.dark-mode) .footer {
 
 body:not(.dark-mode) .footer-hint {
     display: none;
+}
+
+/* Contact Modal */
+.contact-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-modal.active {
+    display: flex;
+}
+
+.contact-modal-content {
+    background: var(--bg-dark);
+    border: 1px solid var(--accent-dark);
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    position: relative;
+}
+
+body:not(.dark-mode) .contact-modal-content {
+    background: var(--bg-light);
+    border-color: var(--accent-light);
+}
+
+.contact-modal-content h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.05em;
+}
+
+.contact-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-dark);
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+    line-height: 1;
+}
+
+.contact-close:hover {
+    opacity: 1;
+}
+
+body:not(.dark-mode) .contact-close {
+    color: var(--text-light);
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.contact-form textarea {
+    background: transparent;
+    border: 1px solid var(--accent-dark);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    transition: border-color 0.3s ease, background 0.3s ease;
+    resize: vertical;
+}
+
+.contact-form textarea::placeholder {
+    color: var(--accent-dark);
+    opacity: 0.7;
+}
+
+.contact-form textarea:focus {
+    outline: none;
+    border-color: var(--highlight);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+body:not(.dark-mode) .contact-form textarea {
+    border-color: var(--accent-light);
+    color: var(--text-light);
+}
+
+body:not(.dark-mode) .contact-form textarea::placeholder {
+    color: var(--accent-light);
+}
+
+body:not(.dark-mode) .contact-form textarea:focus {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.contact-form button {
+    background: transparent;
+    border: 1px solid var(--text-dark);
+    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    align-self: flex-start;
+}
+
+.contact-form button:hover {
+    background: var(--text-dark);
+    color: var(--bg-dark);
+}
+
+body:not(.dark-mode) .contact-form button {
+    border-color: var(--text-light);
+    color: var(--text-light);
+}
+
+body:not(.dark-mode) .contact-form button:hover {
+    background: var(--text-light);
+    color: var(--bg-light);
+}
+
+.form-status {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    min-height: 1.2em;
 }
 
 .experience-list,
