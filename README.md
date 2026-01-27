@@ -1,3 +1,5 @@
-# Karan5352.github.io
-Personal Website
-v1.0
+# karantandra.com
+
+Personal portfolio site.
+
+**Live:** [karan5352.github.io](https://karan5352.github.io)
