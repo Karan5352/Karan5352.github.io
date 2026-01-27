@@ -167,12 +167,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     var scrollProgress = document.querySelector('.scroll-progress');
     var scrollOffset = 0;
+    var scrollTicking = false;
     window.addEventListener('scroll', function () {
-        var scrollTop = window.scrollY;
-        var docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        var scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-        scrollProgress.style.width = scrollPercent + '%';
-        scrollOffset = scrollTop;
+        if (!scrollTicking) {
+            requestAnimationFrame(function () {
+                var scrollTop = window.scrollY;
+                var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                var scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+                scrollProgress.style.width = scrollPercent + '%';
+                scrollOffset = scrollTop;
+                scrollTicking = false;
+            });
+            scrollTicking = true;
+        }
     });
 
     var mouseX = window.innerWidth / 2;
@@ -752,9 +759,18 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         nebulaClouds = nebulaClouds.filter(function (n) { return n.life > 0; });
 
-        requestAnimationFrame(animateStars);
+        if (!document.hidden) {
+            requestAnimationFrame(animateStars);
+        }
     }
     animateStars();
+    
+    // Resume animation when tab becomes visible again
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+            animateStars();
+        }
+    });
 
     var secretStats = document.querySelector('.secret-stats');
     var statsVisible = false;
