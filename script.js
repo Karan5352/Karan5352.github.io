@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     var typedName = document.getElementById('typed-name');
-    typeText(typedName, 'Karan Tandra', 80, function () {
+    typeText(typedName, 'Karan Tandra', 120, function () {
         typedName.classList.add('done');
     });
 
@@ -110,11 +110,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (sectionData) {
                     var headingEl = document.getElementById(sectionData.heading.el);
-                    typeText(headingEl, sectionData.heading.text, 60, function () {
+                    typeText(headingEl, sectionData.heading.text, 90, function () {
                         headingEl.classList.add('done');
                         if (sectionData.content) {
                             var contentEl = document.getElementById(sectionData.content.el);
-                            typeText(contentEl, sectionData.content.text, 30);
+                            typeText(contentEl, sectionData.content.text, 50);
                         }
                         if (sectionData.links) {
                             var linksContainer = document.getElementById('links-container');
@@ -256,16 +256,23 @@ document.addEventListener("DOMContentLoaded", function () {
             var timeSinceActive = Date.now() - lastActiveTime;
             if (timeSinceActive > 1000) {
                 tabJustActivated = true;
+                // Clear any queued effects
+                shootingStars = [];
+                comets = [];
                 setTimeout(function () {
                     tabJustActivated = false;
-                }, 500);
+                }, 1000);
             }
         }
         lastActiveTime = Date.now();
     });
+    
+    function shouldSkipEffect() {
+        return document.hidden || tabJustActivated;
+    }
 
     setInterval(function () {
-        if (tabJustActivated) return;
+        if (shouldSkipEffect()) return;
         if (Math.random() < 0.4) {
             shootingStars.push(createShootingStar());
         }
@@ -276,7 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 1. Comets - larger, slower shooting stars with longer tails
     var comets = [];
     setInterval(function () {
-        if (tabJustActivated) return;
+        if (shouldSkipEffect()) return;
         if (Math.random() < 0.3) {
             comets.push({
                 x: -50,
@@ -294,7 +301,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 2. Constellations - temporary connecting lines
     var constellations = [];
     setInterval(function () {
-        if (tabJustActivated) return;
+        if (shouldSkipEffect()) return;
         if (Math.random() < 0.6 && stars.length > 5) {
             var centerStar = stars[Math.floor(Math.random() * stars.length)];
             var nearbyStars = stars.filter(function (s) {
@@ -315,7 +322,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 4. Satellites
     var satellites = [];
     setInterval(function () {
-        if (tabJustActivated) return;
+        if (shouldSkipEffect()) return;
         if (Math.random() < 0.5) {
             var fromLeft = Math.random() > 0.5;
             satellites.push({
@@ -330,7 +337,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 5. Star flares - random background star brightens
     var starFlares = [];
     setInterval(function () {
-        if (tabJustActivated) return;
+        if (shouldSkipEffect()) return;
         if (Math.random() < 0.6 && stars.length > 0) {
             var star = stars[Math.floor(Math.random() * stars.length)];
             starFlares.push({
@@ -345,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 6. Nebula clouds
     var nebulaClouds = [];
     setInterval(function () {
-        if (tabJustActivated) return;
+        if (shouldSkipEffect()) return;
         if (Math.random() < 0.3) {
             nebulaClouds.push({
                 x: -200,
@@ -362,8 +369,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     canvas.style.pointerEvents = 'auto';
 
+    var justReleasedHold = false;
+
     canvas.addEventListener('click', function (e) {
         if (!document.body.classList.contains('dark-mode')) return;
+        if (justReleasedHold) return;
         var rect = canvas.getBoundingClientRect();
         shootingStars.push({
             x: e.clientX - rect.left,
@@ -410,6 +420,9 @@ document.addEventListener("DOMContentLoaded", function () {
             var holdTime = Date.now() - vortex.startTime;
             // Only trigger supernova if held for at least 200ms
             if (holdTime >= 200) {
+                // Set flag to prevent click from also firing
+                justReleasedHold = true;
+                setTimeout(function () { justReleasedHold = false; }, 50);
                 var intensity = Math.min(1, holdTime / 2000);
                 var color = vortex.color;
                 supernovas.push({
