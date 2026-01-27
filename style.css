@@ -467,6 +467,13 @@ body:not(.dark-mode) .footer {
     border-radius: 4px;
     color: var(--accent-light);
     transition: all 0.2s ease;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.skill-tag.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .dark-mode .skill-tag {

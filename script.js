@@ -69,6 +69,15 @@ document.addEventListener("DOMContentLoaded", function () {
                             });
                         }
                     });
+
+                    if (entry.target.id === 'skills-section') {
+                        var skillTags = entry.target.querySelectorAll('.skill-tag');
+                        skillTags.forEach(function (tag, idx) {
+                            setTimeout(function () {
+                                tag.classList.add('visible');
+                            }, idx * 80);
+                        });
+                    }
                 }
             }
         });
@@ -140,7 +149,17 @@ document.addEventListener("DOMContentLoaded", function () {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
+    var starColors = [
+        'rgba(255, 255, 255,',
+        'rgba(255, 255, 255,',
+        'rgba(255, 255, 255,',
+        'rgba(200, 220, 255,',
+        'rgba(255, 240, 220,',
+        'rgba(180, 200, 255,'
+    ];
+
     for (var i = 0; i < numStars; i++) {
+        var color = starColors[Math.floor(Math.random() * starColors.length)];
         stars.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
@@ -149,7 +168,8 @@ document.addEventListener("DOMContentLoaded", function () {
             radius: Math.random() * 1.5 + 0.5,
             alpha: Math.random() * 0.5 + 0.3,
             twinkleSpeed: Math.random() * 0.02 + 0.005,
-            depth: Math.random() * 0.5 + 0.5
+            depth: Math.random() * 0.5 + 0.5,
+            color: color
         });
         stars[i].baseX = stars[i].x;
         stars[i].baseY = stars[i].y;
@@ -292,7 +312,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             ctx.beginPath();
             ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(255, 255, 255, ' + star.alpha + ')';
+            ctx.fillStyle = (star.color || 'rgba(255, 255, 255,') + star.alpha + ')';
             ctx.fill();
         });
 
