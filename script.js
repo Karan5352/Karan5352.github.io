@@ -282,6 +282,7 @@ document.addEventListener("DOMContentLoaded", function () {
     canvas.style.pointerEvents = 'auto';
 
     canvas.addEventListener('click', function (e) {
+        if (!document.body.classList.contains('dark-mode')) return;
         var rect = canvas.getBoundingClientRect();
         shootingStars.push({
             x: e.clientX - rect.left,
@@ -306,6 +307,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
     canvas.addEventListener('mousedown', function (e) {
+        if (!document.body.classList.contains('dark-mode')) return;
         var rect = canvas.getBoundingClientRect();
         vortex.active = true;
         vortex.x = e.clientX - rect.left;

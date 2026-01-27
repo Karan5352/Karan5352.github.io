@@ -39,6 +39,12 @@ body {
     color: var(--text-dark);
 }
 
+/* Hide star effects in light mode */
+body:not(.dark-mode) #stars-canvas,
+body:not(.dark-mode) .aurora {
+    display: none;
+}
+
 .top-right {
     position: fixed;
     top: 1.5rem;
@@ -93,6 +99,7 @@ h1 {
     white-space: nowrap;
     overflow: hidden;
     padding-right: 0.15em;
+    margin-left: -0.07em;
 }
 
 .name-container {
@@ -407,6 +414,10 @@ body:not(.dark-mode) .footer {
 .footer-hint {
     font-style: italic;
     opacity: 0.5;
+}
+
+body:not(.dark-mode) .footer-hint {
+    display: none;
 }
 
 .experience-list,
