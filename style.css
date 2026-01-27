@@ -1,0 +1,58 @@
+:root {
+    --bg-light: #f8f9fa;
+    --bg-dark: #181818;
+    --text-light: #181818;
+    --text-dark: #f8f9fa;
+}
+body {
+    background: var(--bg-light);
+    color: #111;
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s, color 0.3s;
+}
+.top-right {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    z-index: 10;
+}
+:root {
+    --bg-light: #f8f9fa;
+    --bg-dark: #181818;
+    --text-light: #181818;
+    --text-dark: #f8f9fa;
+}
+.dark-mode {
+    background: var(--bg-dark);
+    color: var(--text-dark);
+}
+h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0 0 2rem 0;
+}
+.mode-toggle {
+    background: #e0e0e0;
+    color: #111;
+    border: none;
+    border-radius: 50%;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.mode-toggle svg {
+    display: block;
+}
+.dark-mode .mode-toggle {
+    background: #333;
+    color: #f8f9fa;
+}
