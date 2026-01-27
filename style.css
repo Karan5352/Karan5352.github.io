@@ -354,6 +354,37 @@ body:not(.dark-mode) .secret-stats {
     color: var(--accent-light);
 }
 
+.footer {
+    margin-top: 4rem;
+    padding: 2rem;
+    font-size: 0.8rem;
+    color: var(--accent-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.footer:hover {
+    opacity: 1;
+}
+
+body:not(.dark-mode) .footer {
+    color: var(--accent-light);
+}
+
+.footer-divider {
+    opacity: 0.4;
+}
+
+.footer-hint {
+    font-style: italic;
+    opacity: 0.5;
+}
+
 .experience-list,
 .project-list {
     display: flex;
