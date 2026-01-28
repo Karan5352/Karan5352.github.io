@@ -1,5 +1,5 @@
-# karantandra.com
+# tandra.dev
 
 Personal portfolio site.
 
-**Live:** [karan5352.github.io](https://karan5352.github.io)
+**Live:** [tandra.dev](https://tandra.dev)
